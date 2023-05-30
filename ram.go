@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/bylexus/go-stdlib"
+	e "github.com/bylexus/go-stdlib/err"
 	"github.com/bylexus/ram/db"
 	"github.com/bylexus/ram/server"
 	"github.com/jessevdk/go-flags"
@@ -23,7 +23,7 @@ func main() {
 
 	opts := ProgramArgs{}
 	_, err := flags.Parse(&opts)
-	stdlib.PanicOnErr(err)
+	e.PanicOnErr(err)
 
 	// First things first: init the db. This makes sure the schema is
 	// created and up to date.
@@ -32,26 +32,35 @@ func main() {
 	db.InitDb(logger, conn)
 
 	// Listen for an os interrupt signal
-	go func() {
-		sigint := make(chan os.Signal, 1)
-		signal.Notify(sigint, os.Interrupt, os.Kill)
-		<-sigint
+	handleOsInterrupts(logger)
 
-		server.Shutdown(logger)
-	}()
+	// start web server
+	startServer(logger, opts)
+}
 
-	// Now, start the web server: start returns a channel that is closed
-	// when the web server shuts down.
-	// We wait so long:
+// Starts the web server: start returns a channel that is closed
+// when the web server shuts down.
+// We wait so long:
+func startServer(logger *log.Logger, programArgs ProgramArgs) {
 	serverConf := server.ServerConfig{
-		StaticDir:  opts.FrontendDir,
-		ListenAddr: opts.ListenAddr,
+		StaticDir:  programArgs.FrontendDir,
+		ListenAddr: programArgs.ListenAddr,
 	}
 
 	done := server.Start(logger, serverConf)
-	if err = <-done; err != http.ErrServerClosed {
+	if err := <-done; err != http.ErrServerClosed {
 		logger.Printf("Error: %s\n", err)
 	} else {
 		logger.Println("Server shut down")
 	}
+}
+
+func handleOsInterrupts(logger *log.Logger) {
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		server.Shutdown(logger)
+	}()
 }

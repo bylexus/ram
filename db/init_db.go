@@ -6,7 +6,8 @@ import (
 	"log"
 	"sort"
 
-	"github.com/bylexus/go-stdlib"
+	e "github.com/bylexus/go-stdlib/err"
+	"github.com/bylexus/go-stdlib/maps"
 	_ "modernc.org/sqlite"
 )
 
@@ -31,7 +32,7 @@ func InitDb(logger *log.Logger, conn *sql.DB) {
 	schemaVersion := getSchemaVersion(conn)
 	logger.Printf("DB Schema is in version %d\n", schemaVersion)
 
-	availableVersions := stdlib.GetMapKeys(&migrations)
+	availableVersions := maps.GetMapKeys(&migrations)
 	sort.Slice(availableVersions, func(i int, j int) bool {
 		return availableVersions[i] < availableVersions[j]
 	})
@@ -58,13 +59,13 @@ func getSchemaVersion(conn *sql.DB) int64 {
 
 func setSchemaVersion(conn *sql.DB, version int64) {
 	_, err := conn.Exec(fmt.Sprintf("PRAGMA user_version = %d", version))
-	stdlib.PanicOnErr(err)
+	e.PanicOnErr(err)
 }
 
 func dbMigration_00001(conn *sql.DB) error {
 	_, err := conn.Exec(`
 		CREATE TABLE IF NOT EXISTS note (
-			id BIGINT NOT NULL PRIMARY KEY,
+			id VARCHAR(36) NOT NULL PRIMARY KEY,
 			note TEXT,
 			url TEXT,
 			tags TEXT,

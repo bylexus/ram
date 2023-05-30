@@ -13,10 +13,12 @@ So I need a tool to simple and fast take a note and examine it later. This shoul
 ## MVP ideas
 
 * A Note consists of:
+  * an ID (uuid, string in the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
   * a texfield
   * an URL
   * some tags
   * a done checkbox (boolean)
+  * a creation timestamp
 * Notes should be kept in a simple SQLite DB
 * A small Go Webserver should offer a UI to enter / list notes
 * Simple, fast, fast and easy to develop - a first version must not be sophisticated! It should be done soon enough!
