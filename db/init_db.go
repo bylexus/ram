@@ -3,10 +3,10 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"sort"
 
 	e "github.com/bylexus/go-stdlib/err"
+	l "github.com/bylexus/go-stdlib/log"
 	"github.com/bylexus/go-stdlib/maps"
 	_ "modernc.org/sqlite"
 )
@@ -19,10 +19,10 @@ var migrations map[int64]func(*sql.DB) error = map[int64]func(*sql.DB) error{
 	3: dbMigration_00003,
 }
 
-func InitDb(logger *log.Logger, conn *sql.DB) {
+func InitDb(logger *l.SeverityLogger, conn *sql.DB) {
 	var err error
 
-	logger.Println("Start DB Migrations")
+	logger.Info("Start DB Migrations")
 
 	// PRAGMA user_version
 	// see https://www.sqlite.org/pragma.html#pragma_user_version:
@@ -30,7 +30,7 @@ func InitDb(logger *log.Logger, conn *sql.DB) {
 	// We use it to get the version number the schema is in, to run the apropriate
 	// migrations.
 	schemaVersion := getSchemaVersion(conn)
-	logger.Printf("DB Schema is in version %d\n", schemaVersion)
+	logger.Info("DB Schema is in version %d", schemaVersion)
 
 	availableVersions := maps.GetMapKeys(&migrations)
 	sort.Slice(availableVersions, func(i int, j int) bool {
@@ -39,13 +39,13 @@ func InitDb(logger *log.Logger, conn *sql.DB) {
 
 	for _, version := range availableVersions {
 		if version > schemaVersion {
-			logger.Printf("Executing DB Migration #%d ... ", version)
+			logger.Info("Executing DB Migration #%d ... ", version)
 			err = migrations[version](conn)
 			if err != nil {
 				panic(err)
 			}
 			setSchemaVersion(conn, version)
-			logger.Println("done")
+			logger.Info("done")
 		}
 	}
 }

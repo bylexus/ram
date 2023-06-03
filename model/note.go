@@ -9,23 +9,15 @@ import (
 )
 
 type Note struct {
-	Id      string
-	Note    string
-	Url     string
-	Tags    []string
-	Created time.Time
-	Done    bool
+	Id      string    `json:"id"`
+	Note    string    `json:"note"`
+	Url     string    `json:"url"`
+	Tags    []string  `json:"tags"`
+	Created time.Time `json:"created"`
+	Done    bool      `json:"done"`
 
 	// new entries are phantom entries (not yet persisted)
 	phantom bool
-}
-
-func (n *Note) IsPhantom() bool {
-	return n.phantom
-}
-
-func (n *Note) SetPhantom(isPhantom bool) {
-	n.phantom = isPhantom
 }
 
 func NewNote(note string, url string, tags string) Note {
@@ -44,4 +36,12 @@ func NewNote(note string, url string, tags string) Note {
 	}
 
 	return newNote
+}
+
+func (n *Note) IsPhantom() bool {
+	return n.phantom
+}
+
+func (n *Note) SetPhantom(isPhantom bool) {
+	n.phantom = isPhantom
 }

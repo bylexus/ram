@@ -87,7 +87,10 @@
 	<main>
 		<div class="add-form">
 			<h2>Add new note</h2>
-			<form id="notesForm" method="post" enctype="application/x-www-form-urlencoded">
+			<form id="notesForm" hx-put="/notes" hx-swap="none" hx-ext="json-enc"
+				hx-on="htmx:beforeRequest: loadingOn()
+				       htmx:afterRequest: loadingOff();htmx.trigger('#notesList', 'reload')"
+				>
 				<div class="field add-note">
 					<label for="note">Note:</label>
 					<input type="text" name="note" id="note" />
@@ -101,51 +104,13 @@
 					<input type="text" name="tags" id="tags" />
 				</div>
 				<div class="add-btns">
-					<button type="submit">add</button>
+					<button type="submit" id="sendBtn">add</button>
 				</div>
 			</form>
 
 		</div>
 
-		<div class="notes-list">
-			<h2>Notes</h2>
-			<div class="note">
-				<div class="note-tools">
-					<a href="" title="edit">✏️</a>
-					<a href="" title="delete">🪣</a>
-				</div>
-				<div class="note-created">2023-03-16 22:25</div>
-				<div class="note-content">Lorem Ipsum Dolor Amet Situm Martus</div>
-				<div class="note-url"><a href="" target="_blank">https://alexi.ch/</a></div>
-				<div class="note-tags">
-					<span>tag1</span>
-					<span>tag2</span>
-				</div>
-				<div class="note-done"><label>done: <input type="checkbox" /></label></div>
-			</div>
-			<div class="note">
-				<div class="note-tools">
-					<a href="" title="edit">✏️</a>
-					<a href="" title="delete">🪣</a>
-				</div>
-				<div class="note-created">2023-03-16 22:25</div>
-				<div class="note-content">Lorem Ipsum Dolor Amet Situm Martus</div>
-				<div class="note-url"><a href="" target="_blank">https://alexi.ch/</a></div>
-				<div class="note-tags">
-					<span>tag1</span>
-					<span>tag2</span>
-				</div>
-				<div class="note-done"><label>done: <input type="checkbox" /></label></div>
-			</div>
-			<div class="note">
-				<div class="note-created">2023-03-16 22:25</div>
-				<div class="note-content">Lorem Ipsum Dolor Amet Situm Martus</div>
-				<div class="note-url"><a href="" target="_blank">https://alexi.ch/</a></div>
-				<div class="note-tags">
-					<span>tag1</span>
-				</div>
-				<div class="note-done"><label>done: <input type="checkbox" checked /></label></div>
-			</div>
+		<div id="notesList" class="notes-list" hx-get="/notes" hx-trigger="load, reload">
 		</div>
 	</main>
 	<footer>
@@ -153,32 +118,19 @@
 	</footer>
 
 	<script>
-		const notesForm = document.getElementById("notesForm");
-		notesForm.addEventListener("submit", async (e) => {
-			e.preventDefault();
-			console.log(JSON.stringify());
+		const form = document.getElementById('notesForm');
+		const sendBtn = document.getElementById('sendBtn');
 
-			try {
-				await fetch('/notes', {
-					method: 'PUT',
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(formDataToObject(new FormData(notesForm)))
-				});
-			} catch (ex) {
-
-			}
-		});
-
-		function formDataToObject(formData) {
-			const obj = {};
-			for (let entry of formData.entries()) {
-				obj[entry[0]] = entry[1];
-			}
-			return obj;
+		function loadingOn() {
+			sendBtn.setAttribute('disabled', true);
 		}
+		function loadingOff() {
+			sendBtn.removeAttribute('disabled');
+		}
+		
 	</script>
+	<script src="htmx.min.js"></script>
+	<script src="htmx-json-enc.js"></script>
 </body>
 
 </html>

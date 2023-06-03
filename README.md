@@ -44,3 +44,9 @@ So I need a tool to simple and fast take a note and examine it later. This shoul
 * Notes API
 
 
+## 3rd-party tools
+
+* [htmx](https://htmx.org/), under the [BSD 2-Clause License](https://github.com/bigskysoftware/htmx/blob/master/LICENSE)
+* [github.com/google/uuid](https://github.com/google/uuid)
+* [github.com/jessevdk/go-flags](https://github.com/jessevdk/go-flags)
+* [modernc.org/sqlite](https://modernc.org/sqlite)

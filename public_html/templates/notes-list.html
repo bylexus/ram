@@ -1,0 +1,39 @@
+{{ range . }}
+<h2>Notes</h2>
+<div class="note">
+	<div class="note-tools">
+		<a href="" title="edit">✏️</a>
+		<a href="" title="delete"
+			hx-trigger="click"
+			hx-delete="/notes/{{.Id}}"
+			hx-swap="none"
+			hx-confirm="Sure?"
+			hx-on="htmx:beforeRequest: loadingOn()
+					htmx:afterRequest: loadingOff();htmx.trigger('#notesList', 'reload')"
+		
+		>🪣</a>
+	</div>
+	<div class="note-created">{{ .Created.Format "02.01.2006 15:04" }}</div>
+	<div class="note-content">
+		{{ .Note }}
+	</div>
+	<div class="note-url"><a href="{{ .Url }}" target="_blank">{{ .Url }}</a></div>
+	<div class="note-tags">
+		{{ range $i, $tag := .Tags}}
+		<span>{{ $tag }}</span>
+		{{ end }}
+	</div>
+	<div class="note-done">
+		<label>done: 
+			<input type="checkbox" {{ if .Done}}checked{{ end }} value="true" name="Done"
+			hx-trigger="change"
+			hx-post="/notes/{{.Id}}/setDone"
+			hx-swap="none"
+			hx-ext="json-enc"
+			hx-on="htmx:beforeRequest: loadingOn()
+					htmx:afterRequest: loadingOff();htmx.trigger('#notesList', 'reload')"
+
+			/></label>
+	</div>
+</div>
+{{ end }}
