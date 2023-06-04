@@ -10,5 +10,9 @@
 - user auth
 - models per uers
 
+## Web server
+
+- logging middleware
+
 ## external resources
 - add resources (html, templates) as compiled-in data

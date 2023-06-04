@@ -14,6 +14,8 @@ type ServerConfig struct {
 	ListenAddr string
 }
 
+type ServerContextKey string
+
 // Contains the http server infrastructure
 type Server struct {
 	httpServer *http.Server
@@ -39,6 +41,8 @@ func Start(logger *l.SeverityLogger, conf ServerConfig) chan error {
 	serverWait = make(chan error, 1)
 
 	mux := http.NewServeMux()
+	// configure global middlewares:
+	var sessionMiddleware = NewSessionMiddleware(logger)
 
 	server = &Server{
 		httpServer: &http.Server{
@@ -51,8 +55,8 @@ func Start(logger *l.SeverityLogger, conf ServerConfig) chan error {
 	}
 
 	// Register route handlers:
-	mux.Handle("/", http.FileServer(http.Dir(conf.StaticDir)))
-	mux.HandleFunc("/notes", server.handleNotesRoute)
+	mux.Handle("/", sessionMiddleware.WrapHandler(http.FileServer(http.Dir(conf.StaticDir))))
+	mux.Handle("/notes", sessionMiddleware.WrapHandler(NewNotesRouter(logger, server)))
 
 	// Start the web server in a separate goroutine,
 	// to de-block the main thread that called Start.
