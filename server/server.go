@@ -44,19 +44,21 @@ func Start(logger *l.SeverityLogger, conf ServerConfig) chan error {
 	// configure global middlewares:
 	var sessionMiddleware = NewSessionMiddleware(logger)
 
+	globalHandler := sessionMiddleware.WrapHandler(mux)
+
 	server = &Server{
 		httpServer: &http.Server{
 			Addr:     conf.ListenAddr,
-			Handler:  mux,
+			Handler:  globalHandler,
 			ErrorLog: logger.GetInternalLogger(l.ERROR),
 		},
 		logger: logger,
 		Config: conf,
 	}
 
-	// Register route handlers:
-	mux.Handle("/", sessionMiddleware.WrapHandler(http.FileServer(http.Dir(conf.StaticDir))))
-	mux.Handle("/notes", sessionMiddleware.WrapHandler(NewNotesRouter(logger, server)))
+	// Register route handlers, wrap in middlewares where apropriate:
+	mux.Handle("/", http.FileServer(http.Dir(conf.StaticDir)))
+	mux.Handle("/notes", NewNotesRouter(logger, server))
 
 	// Start the web server in a separate goroutine,
 	// to de-block the main thread that called Start.

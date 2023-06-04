@@ -8,6 +8,27 @@ import (
 	"github.com/kataras/go-sessions/v3"
 )
 
+/*
+The Session Middleware enables cookie web sessions.
+It can wrap handlers to inject the session handling.
+
+It uses github.com/kataras/go-sessions/v3 as session library.
+
+It is instatiated once, then each Handler is wrapped using the WrapHandler function:
+
+	var sessionMiddleware = NewSessionMiddleware(logger)
+	// ...
+	handler := sessionMiddleware.WrapHander(existingHandler)
+	httpServer.handle("/some/route", handler)
+
+It injects the active session into the Request's context.
+A child handler can access the session by using:
+
+	func ServeHTTP(w http.ResponseWriter, r *http.Request) {
+		var s *sessions.Session = server.GetSession(r)
+		s.Set()/Get...
+	}
+*/
 type SessionMiddleware interface {
 	WrapHandler(handler http.Handler) http.Handler
 }
