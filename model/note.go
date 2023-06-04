@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bylexus/go-stdlib/slices"
 	stdstr "github.com/bylexus/go-stdlib/strings"
 	"github.com/google/uuid"
 )
@@ -32,7 +33,7 @@ func NewNote(note string, url string, tags string) Note {
 	}
 	tagSlice, err := stdstr.SplitRe(strings.TrimSpace(tags), `[,;\s]+`)
 	if err == nil {
-		newNote.Tags = tagSlice
+		newNote.Tags = slices.Filter(&tagSlice, func(el *string) bool { return *el != "" })
 	}
 
 	return newNote
