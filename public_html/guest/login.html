@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ram - login</title>
+	<link rel="stylesheet" type="text/css" href="/resources/styles.css" />
+</head>
+
+<body>
+	<header>
+		<h1>R.A.M.</h1>
+		<p class="subtitle">Personal Random Access Memory</p>
+	</header>
+
+	<main>
+		<h1>Welcome to R.A.M. - Login</h1>
+		<form>
+			<div class="field">
+				<label for="username">Username</label>
+				<input id="username" type="text" placeholder="guybrush" />
+			</div>
+			<div class="field">
+				<label for="password">Password</label>
+				<input id="password" type="password" />
+			</div>
+			<div class="form-btns">
+				<button type="submit">Login</button>
+			</div>
+		</form>
+	</main>
+	<footer>
+		&copy; 2023 <a href="https://alexi.ch/">alexi.ch</a>
+	</footer>
+
+	<script>
+		const form = document.getElementById('notesForm');
+		const sendBtn = document.getElementById('sendBtn');
+
+		function loadingOn() {
+			sendBtn.setAttribute('disabled', true);
+		}
+		function loadingOff() {
+			sendBtn.removeAttribute('disabled');
+		}
+		
+	</script>
+	<script src="/resources/htmx/htmx.min.js"></script>
+	<script src="/resources/htmx/htmx-json-enc.js"></script>
+</body>
+
+</html>

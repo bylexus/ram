@@ -23,11 +23,10 @@ type concreteNotesRouter struct {
 }
 
 func NewNotesRouter(logger *log.SeverityLogger, server *Server) NotesRouter {
-	r := concreteNotesRouter{
+	return &concreteNotesRouter{
 		logger: logger,
 		server: server,
 	}
-	return &r
 }
 
 func (n *concreteNotesRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {

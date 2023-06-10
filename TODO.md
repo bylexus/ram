@@ -7,8 +7,9 @@
 
 ## Auth
 
+- index.html should already be checked by auth middleware
 - user auth
-- models per uers
+- models per user
 
 ## Web server
 

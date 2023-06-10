@@ -40,12 +40,12 @@ type concreteSessionMiddleware struct {
 
 const SessionContextKey ServerContextKey = "session"
 
-type handlerWrapper struct {
+type middlewareHandleWrapper struct {
 	middlewareInst *concreteSessionMiddleware
 	wrappedHandler http.Handler
 }
 
-func (h handlerWrapper) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h middlewareHandleWrapper) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.middlewareInst.serveHttpFn(h.wrappedHandler, w, r)
 }
 
@@ -58,7 +58,7 @@ func NewSessionMiddleware(logger *log.SeverityLogger) SessionMiddleware {
 }
 
 func (s concreteSessionMiddleware) WrapHandler(handler http.Handler) http.Handler {
-	h := handlerWrapper{
+	h := middlewareHandleWrapper{
 		middlewareInst: &s,
 		wrappedHandler: handler,
 	}

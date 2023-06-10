@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"path"
 
 	l "github.com/bylexus/go-stdlib/log"
 )
@@ -43,8 +44,13 @@ func Start(logger *l.SeverityLogger, conf ServerConfig) chan error {
 	mux := http.NewServeMux()
 	// configure global middlewares:
 	var sessionMiddleware = NewSessionMiddleware(logger)
+	var authMiddleware = NewAuthMiddleware(logger)
 
-	globalHandler := sessionMiddleware.WrapHandler(mux)
+	// all requests use a cookie session:
+	globalHandler := sessionMiddleware.WrapHandler(
+		// limit body data sent to 4k
+		http.MaxBytesHandler(mux, 4*1024),
+	)
 
 	server = &Server{
 		httpServer: &http.Server{
@@ -57,8 +63,12 @@ func Start(logger *l.SeverityLogger, conf ServerConfig) chan error {
 	}
 
 	// Register route handlers, wrap in middlewares where apropriate:
-	mux.Handle("/", http.FileServer(http.Dir(conf.StaticDir)))
-	mux.Handle("/notes", NewNotesRouter(logger, server))
+	mux.Handle("/notes", authMiddleware.WrapHandler(NewNotesRouter(logger, server)))
+	mux.Handle("/guest/", http.FileServer(http.Dir(conf.StaticDir)))
+	mux.Handle("/resources/", http.FileServer(http.Dir(conf.StaticDir)))
+
+	// make sure that all non-auth routes are configured first (see above)
+	mux.Handle("/", authMiddleware.WrapHandler(http.FileServer(http.Dir(path.Join(conf.StaticDir, "auth")))))
 
 	// Start the web server in a separate goroutine,
 	// to de-block the main thread that called Start.
@@ -66,6 +76,7 @@ func Start(logger *l.SeverityLogger, conf ServerConfig) chan error {
 	// and closes it.
 	go func() {
 		logger.Info("r.a.m. is starting on %s from %s", server.httpServer.Addr, conf.StaticDir)
+		logger.Debug("Server config is: %#v", server.Config)
 		err := server.httpServer.ListenAndServe()
 		serverWait <- err
 		close(serverWait)

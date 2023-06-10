@@ -5,77 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>ram</title>
-	<style>
-		:root {
-			--header-bg-col: rgb(106, 25, 123);
-		}
-
-		body {
-			margin: 0;
-			padding: 0;
-			height: 100vh;
-			overflow: auto;
-			font-family: sans-serif;
-			font-size: 16pt;
-			line-height: 1.5em;
-		}
-
-		a {
-			text-decoration: none;
-		}
-
-		button {
-			border: 1px solid #ccc;
-			border-radius: 5px;
-			padding: 5px 8px;
-			font-size: 16pt;
-		}
-
-		header {
-			background-color: var(--header-bg-col);
-			padding: 1em;
-			color: white;
-		}
-
-		header h1 {
-			font-size: 18pt;
-		}
-
-		header .subtitle {
-			font-size: 14pt;
-			color: #ccc;
-
-		}
-
-		form .field label {
-			display: block;
-			font-size: 12pt;
-			line-height: 1.3rem;
-			margin-bottom: 0.125rem;
-			margin-top: 0.5rem;
-		}
-
-		form .field input {
-			font-size: 16pt;
-			border: 1px solid #ccc;
-			border-radius: 5px;
-			padding: 3px 5px;
-			width: 100%;
-		}
-
-		.add-form .add-btns {
-			margin-top: 1rem;
-			margin-bottom: 1rem;
-		}
-
-
-
-		main {
-			margin-left: auto;
-			margin-right: auto;
-			padding: 20px;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="/resources/styles.css" />
 </head>
 
 <body>
@@ -103,7 +33,7 @@
 					<label for="tags">Tags:</label>
 					<input type="text" name="tags" id="tags" />
 				</div>
-				<div class="add-btns">
+				<div class="form-btns">
 					<button type="submit" id="sendBtn">add</button>
 				</div>
 			</form>
@@ -129,8 +59,8 @@
 		}
 		
 	</script>
-	<script src="htmx/htmx.min.js"></script>
-	<script src="htmx/htmx-json-enc.js"></script>
+	<script src="/resources/htmx/htmx.min.js"></script>
+	<script src="/resources/htmx/htmx-json-enc.js"></script>
 </body>
 
 </html>
